@@ -1,7 +1,7 @@
 import {createSlice, configureStore, PayloadAction} from '@reduxjs/toolkit'
 import TodoGroup from '../core/TodoGroup'
 import { CreateGroup, RemoveGroup } from './actions/GroupActions'
-import { CreateTodo, RemoveTodo } from './actions/TodoActions'
+import { CreateTodo, RemoveTodo, ToggleTodo } from './actions/TodoActions'
 
 
 interface StoreState {
@@ -34,24 +34,37 @@ const todos_slice = createSlice({
                 group_id: action.payload.item.group_id,
                 text: action.payload.item.text,
                 deadline: action.payload.item.deadline,
-                created_on: "NOW"
+                created_on: "NOW",
+                completed: false
             })
         },
 
         removeTodo(state, action: PayloadAction<RemoveTodo>) {
             let group = state.tgroups.get(action.payload.group_id)
 
-            if (group) {
+            if ( group ) {
                 group.items = group.items.filter(x => x.id != action.payload.todo_id)
+            }
+        },
+
+        toggleTodo(state, action: PayloadAction<ToggleTodo>) {
+            let group = state.tgroups.get(action.payload.group_id)
+
+            if ( group ) {
+                let item = group.items.find(x => x.id == action.payload.todo_id)
+                if ( item ) {
+                    item.completed = !item.completed
+                }
             }
         }
     }
 })
 
 const store = configureStore({
-    reducer: todos_slice.reducer
+    reducer: todos_slice.reducer,
+    devTools: true
 })
 
-export const { createGroup, removeGroup, createTodo, removeTodo } = todos_slice.actions
+export const { createGroup, removeGroup, createTodo, removeTodo, toggleTodo } = todos_slice.actions
 export type { StoreState }
 export default store;

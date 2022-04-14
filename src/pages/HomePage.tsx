@@ -5,6 +5,9 @@ import TodoGroup from "../core/TodoGroup";
 import Todo from '../core/Todo'
 import { createGroup, createTodo, StoreState } from "../store/default";
 
+import Button from '@mui/material/Button'
+import { Grid } from '@mui/material';
+
 
 function HomePage(props: any) {
     const groups = useSelector((state: StoreState) => state.tgroups)
@@ -16,37 +19,49 @@ function HomePage(props: any) {
     })
 
     function addRandom() {
+        
         let id = uuid()
-        let name = uuid()
+            let name = uuid()
 
-        let todo: Todo = {
-            id: uuid(),
-            group_id: id,
-            text: "Random Todo",
-            created_on: "NOW",
-            deadline: "NEVER"
+            
+
+            dispatch(createGroup({
+                group_id: id,
+                group_name: name
+            }))
+
+        for(let i = 0; i < Math.floor(Math.random() * 5) + 1; i++) {
+            let todo: Todo = {
+                id: uuid(),
+                group_id: id,
+                text: "Random Todo",
+                created_on: "NOW",
+                deadline: "NEVER",
+                completed: false
+            }
+            setTimeout(() => {
+                dispatch(createTodo({
+                    item: todo
+                }))
+            }, 100)
+
+            console.log('Added a random todo!')
         }
-
-        dispatch(createGroup({
-            group_id: id,
-            group_name: name
-        }))
-        dispatch(createTodo({
-            item: todo
-        }))
-
-        console.log('Added a random todo!')
     }
 
     return (
         <>
-            <div>
-            {
-                list.map(x => <TodoCard item = {x} ></TodoCard>)
-            }
-            </div>
+            <Grid container spacing={1}>
+                {
+                    list.map(x => {
+                        return <Grid item>
+                            <TodoCard item={x}></TodoCard>
+                        </Grid>
+                    })
+                }
+            </Grid>
             <p>
-                <button onClick={addRandom}>Add Random</button>
+                <Button variant="contained" onClick={addRandom}>Add Random</Button>
             </p>
         </>
     )
