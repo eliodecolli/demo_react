@@ -3,14 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import TodoCard from "../components/TodoCard";
 import TodoGroup from "../core/TodoGroup";
 import Todo from '../core/Todo'
-import { createGroup, createTodo, StoreState } from "../store/default";
+import { createGroup, createTodo, RootState } from "../store/default";
 
 import Button from '@mui/material/Button'
 import { Grid } from '@mui/material';
+import { useTodosSelector } from '../core/Hooks';
 
 
 function HomePage(props: any) {
-    const groups = useSelector((state: StoreState) => state.tgroups)
+    const groups = useTodosSelector(x => x.tgroups)
     const dispatch = useDispatch()
     
     const list: TodoGroup[] = []
@@ -22,8 +23,6 @@ function HomePage(props: any) {
         
         let id = uuid()
             let name = uuid()
-
-            
 
             dispatch(createGroup({
                 group_id: id,

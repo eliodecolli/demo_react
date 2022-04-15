@@ -3,13 +3,14 @@ import ListItem from '@mui/material/ListItem'
 import { ChangeEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Todo from '../core/Todo';
-import { removeTodo, StoreState, toggleTodo } from '../store/default';
+import { removeTodo, RootState, toggleTodo } from '../store/default';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useTodosSelector } from '../core/Hooks';
 
 function TodoTask(props: {
     item: Todo
 }) {
-    const isCompleted = useSelector((state: StoreState) => {
+    const isCompleted = useTodosSelector(state => {
         let group = state.tgroups.get(props.item.group_id)
 
         if ( group ) {

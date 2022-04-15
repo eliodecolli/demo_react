@@ -1,20 +1,33 @@
 import {createSlice, configureStore, PayloadAction} from '@reduxjs/toolkit'
 import TodoGroup from '../core/TodoGroup'
+import { Login } from './actions/AuthActions';
 import { CreateGroup, RemoveGroup } from './actions/GroupActions'
 import { CreateTodo, RemoveTodo, ToggleTodo } from './actions/TodoActions'
 
 
-interface StoreState {
+interface TodosStoreState {
     tgroups: Map<string, TodoGroup>;
 }
 
-const initialState: StoreState = {
+interface AuthStoreState {
+    username: string;
+    token: string | undefined;
+    isLoggedIn: boolean;
+}
+
+const authInitialState: AuthStoreState = {
+    username: 'Anon',
+    token: undefined,
+    isLoggedIn: false
+}
+
+const todosInitialState: TodosStoreState = {
     tgroups: new Map<string, TodoGroup>()
 }
 
 const todos_slice = createSlice({
     name: 'todos',
-    initialState,
+    initialState: todosInitialState,
     reducers: {
         createGroup(state, action: PayloadAction<CreateGroup>) {
             state.tgroups.set(action.payload.group_id, {
@@ -60,11 +73,40 @@ const todos_slice = createSlice({
     }
 })
 
+const auth_slice = createSlice({
+    name: 'auth',
+    initialState: authInitialState,
+    reducers: {
+
+        login(state, action: PayloadAction<Login>) {
+            state.username = action.payload.userName
+            state.token = action.payload.token
+            state.isLoggedIn = true
+        },
+
+        logout(state) {
+            state.username = 'Anon'
+            state.token = undefined
+            state.isLoggedIn = false
+        },
+
+        default(state) {
+            return state
+        }
+
+    }
+})
+
 const store = configureStore({
-    reducer: todos_slice.reducer,
+    reducer: {
+        todos: todos_slice.reducer,
+        auth: auth_slice.reducer
+    },
     devTools: true
 })
 
 export const { createGroup, removeGroup, createTodo, removeTodo, toggleTodo } = todos_slice.actions
-export type { StoreState }
+export const { login, logout } = auth_slice.actions
+export type RootState = ReturnType<typeof store.getState>
+export type {TodosStoreState, AuthStoreState}
 export default store;

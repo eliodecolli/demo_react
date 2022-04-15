@@ -21,7 +21,7 @@ function TodoCard(props: {
                 <Typography variant="body2">
                     {
                         props.item.items.map(x => {
-                            return <TodoTask item={x}></TodoTask>
+                            return <TodoTask key={x.id} item={x}></TodoTask>
                         })
                     }
                 </Typography>
