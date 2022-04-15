@@ -3,12 +3,16 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { Provider } from 'react-redux';
 
-import {BrowserRouter, Route, Routes} from 'react-router-dom'
+import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
 
 import { enableMapSet } from 'immer';
 
 import store from './store/default'
 import HomePage from './pages/HomePage';
+import Signup from './pages/Signup';
+import { useAuthorization } from './core/Hooks';
+import Login from './pages/Login';
+import TodoGroup from './pages/TodoGroups';
 
 enableMapSet();
 
@@ -21,7 +25,10 @@ root.render(
       <Provider store={store}>
         <BrowserRouter>
         <Routes>
-          <Route path="/" element={<App />} />
+          <Route path='/' element={<App />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<Signup />} />
+          <Route path='/groups' element={<TodoGroup />} />
         </Routes>
         </BrowserRouter>
       </Provider>

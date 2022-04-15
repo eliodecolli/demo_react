@@ -1,26 +1,22 @@
-import { Button, FormControl, Link, Paper, TextField } from "@mui/material";
-import Box from "@mui/material/Box";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
-import { useAuthorization } from "../core/Hooks";
-import { login } from "../store/default";
+import { Box, Button, FormControl, Link, TextField } from "@mui/material"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router"
+import { useAuthorization } from "../core/Hooks"
+import { registerAsync } from "../core/logic/AuthLogic"
 
-function Login() {
-
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-
-    const dispatch = useDispatch()
-
-    const navigate = useNavigate()
+function Signup() {
     const auth = useAuthorization()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if ( auth ) {
             navigate('/')
         }
     })
+
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+
 
     return (
         <Box sx={{
@@ -43,16 +39,14 @@ function Login() {
                         label="Password"
                     />
                     <Button variant='contained' onClick={() => {
-                      dispatch(login({
-                          userName: username,
-                          token: 'abc'
-                      }))
-                      navigate('/')
-                    }}>Login</Button>
+                      registerAsync(username, password).then(() => {
+                          navigate('/')
+                      })
+                    }}>Signup</Button>
             </FormControl>
-            <Link onClick={() => navigate('/signup')} component='a'>Sign up</Link>
+            <Link onClick={() => navigate('/login')} component='a'>Login</Link>
         </Box>
     )
 }
 
-export default Login;
+export default Signup;

@@ -8,12 +8,15 @@ import { createGroup, createTodo, RootState } from "../store/default";
 import Button from '@mui/material/Button'
 import { Grid } from '@mui/material';
 import { useTodosSelector } from '../core/Hooks';
-import { createNewTodoAsync } from '../core/logic/TodoLogic';
+import { createNewTodoAsync, createTodoGroupAsync } from '../core/logic/TodoLogic';
+import { useNavigate } from 'react-router';
 
 
 function HomePage(props: any) {
     const groups = useTodosSelector(x => x.tgroups)
     const dispatch = useDispatch()
+
+    const navigate = useNavigate()
     
     const list: TodoGroup[] = []
     groups.forEach((v, k) => {
@@ -21,24 +24,22 @@ function HomePage(props: any) {
     })
 
     function addRandom() {
-        
-        let id = uuid()
-        let name = uuid()
-
+        createTodoGroupAsync(uuid()).then(x => {
             dispatch(createGroup({
-                group_id: id,
-                group_name: name
+                group_id: x.id,
+                group_name: x.name
             }))
-
-        for(let i = 0; i < Math.floor(Math.random() * 5) + 1; i++) {
-            createNewTodoAsync('Random Task', id).then(todo => {
-                dispatch(createTodo({
-                    item: todo
-                }))
-            })
-            
-            console.log('Added a random todo!')
-        }
+    
+            for(let i = 0; i < Math.floor(Math.random() * 5) + 1; i++) {
+                createNewTodoAsync('Random Task', x.id).then(todo => {
+                    dispatch(createTodo({
+                        item: todo
+                    }))
+                })
+                
+                console.log('Added a random todo!')
+            }
+        })
     }
 
     return (
@@ -54,6 +55,7 @@ function HomePage(props: any) {
             </Grid>
             <p>
                 <Button variant="contained" onClick={addRandom}>Add Random</Button>
+                <Button variant="contained" onClick={() => { navigate('/groups') }}>Go to groups</Button>
             </p>
         </>
     )

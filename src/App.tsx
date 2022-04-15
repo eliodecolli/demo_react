@@ -1,19 +1,18 @@
+import { useEffect } from 'react';
+import { Navigate, Route, useNavigate } from 'react-router';
 import { useAuthorization } from './core/Hooks';
 import HomePage from './pages/HomePage';
-import Login from './pages/Login';
 
 function App() {
-
   const auth = useAuthorization()
+  const navigate = useNavigate()
   
-  if (auth) {
-    return <HomePage />
-  }
-  else {
-    return (
-      <Login />
-    )
-  }
+  useEffect(() => {
+    if ( !auth )
+      navigate('/login')
+  }, [])
+
+  return <HomePage />
 }
 
 export default App;
