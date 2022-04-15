@@ -6,6 +6,7 @@ import Todo from '../core/Todo';
 import { removeTodo, RootState, toggleTodo } from '../store/default';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTodosSelector } from '../core/Hooks';
+import { removeTodoAsync, toggleTodoAsync } from '../core/logic/TodoLogic';
 
 function TodoTask(props: {
     item: Todo
@@ -24,17 +25,21 @@ function TodoTask(props: {
     const dispatch = useDispatch()
 
     function handleToggle() {
-        dispatch(toggleTodo({
-            group_id: props.item.group_id,
-            todo_id: props.item.id
-        }))
+        toggleTodoAsync(props.item.id).then(() => {
+            dispatch(toggleTodo({
+                group_id: props.item.group_id,
+                todo_id: props.item.id
+            }))
+        })
     }
 
     function handleDelete() {
-        dispatch(removeTodo({
-            group_id: props.item.group_id,
-            todo_id: props.item.id
-        }))
+        removeTodoAsync(props.item.id).then(() => {
+            dispatch(removeTodo({
+                group_id: props.item.group_id,
+                todo_id: props.item.id
+            }))
+        })
     }
 
     return (

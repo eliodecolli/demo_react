@@ -1,7 +1,5 @@
 import Todo from "../Todo";
 import {v4 as uuid} from 'uuid';
-import { useDispatch } from "react-redux";
-import { createTodo } from "../../store/default";
 
 export function createNewTodoAsync(text: string, group_id: string): Promise<Todo> {
     // here we should use Axios but later on I guess :)
@@ -15,7 +13,23 @@ export function createNewTodoAsync(text: string, group_id: string): Promise<Todo
             deadline: "NEVER",
             completed: false
         }
+
         resolve(todo)
     })
 }
 
+export function toggleTodoAsync(todoId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        // axios stuff
+
+        resolve()
+    })
+}
+
+export function removeTodoAsync(todoId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        // axios stuff
+
+        resolve()
+    })
+}
