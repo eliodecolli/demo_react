@@ -8,6 +8,7 @@ import { createGroup, createTodo, RootState } from "../store/default";
 import Button from '@mui/material/Button'
 import { Grid } from '@mui/material';
 import { useTodosSelector } from '../core/Hooks';
+import { createNewTodoAsync } from '../core/logic/TodoLogic';
 
 
 function HomePage(props: any) {
@@ -22,7 +23,7 @@ function HomePage(props: any) {
     function addRandom() {
         
         let id = uuid()
-            let name = uuid()
+        let name = uuid()
 
             dispatch(createGroup({
                 group_id: id,
@@ -30,20 +31,12 @@ function HomePage(props: any) {
             }))
 
         for(let i = 0; i < Math.floor(Math.random() * 5) + 1; i++) {
-            let todo: Todo = {
-                id: uuid(),
-                group_id: id,
-                text: "Random Todo",
-                created_on: "NOW",
-                deadline: "NEVER",
-                completed: false
-            }
-            setTimeout(() => {
+            createNewTodoAsync('Random Task', id).then(todo => {
                 dispatch(createTodo({
                     item: todo
                 }))
-            }, 100)
-
+            })
+            
             console.log('Added a random todo!')
         }
     }
