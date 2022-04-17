@@ -2,11 +2,11 @@ import { Box, Button, Divider, Fade, FormControl, Modal, TextField, Typography }
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAuthorization } from "../core/Hooks";
-import { createNewTodoAsync } from "../core/logic/TodoLogic";
-import { createTodo } from "../store/default";
+import { createNewTodoAsync, createTodoGroupAsync } from "../core/logic/TodoLogic";
+import { createGroup, createTodo } from "../store/default";
 
-function CreateTodo(props: {open: boolean, group_id: string, close_fn: () => void}) {
-    const [taskText, setTaskText] = useState('')
+function CreateGroup(props: {open: boolean, close_fn: () => void}) {
+    const [groupName, setGroupName] = useState('')
     const dispatch = useDispatch()
 
     const [_, token] = useAuthorization()
@@ -25,12 +25,13 @@ function CreateTodo(props: {open: boolean, group_id: string, close_fn: () => voi
 
     function handleCreate() {
         if ( token ) {
-            createNewTodoAsync(token, taskText, props.group_id).then(todo => {
-                console.log(todo)
-                dispatch(createTodo({
-                    item: todo
+            createTodoGroupAsync(token, groupName).then(group => {
+                dispatch(createGroup({
+                    group_id: group.id,
+                    group_name: groupName,
+                    items: []
                 }))
-                setTaskText('')
+                setGroupName('')
                 props.close_fn()
             })
         }
@@ -40,7 +41,7 @@ function CreateTodo(props: {open: boolean, group_id: string, close_fn: () => voi
         <Modal
             open={props.open}
             onClose={() => {
-                setTaskText('')
+                setGroupName('')
                 props.close_fn()
             }}>
             <Fade in={props.open}>
@@ -50,11 +51,11 @@ function CreateTodo(props: {open: boolean, group_id: string, close_fn: () => voi
                     </Typography>
                     <Typography sx={{ mt: 2 }}>
                         <FormControl>
-                            <TextField id='task_details' onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                    setTaskText(event.target.value)
+                            <TextField id='group_name' onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                    setGroupName(event.target.value)
                                 }} 
-                                value={taskText}
-                                label='Task Details'
+                                value={groupName}
+                                label='Group Name'
                             />
                             <Divider />
                             <Button variant='contained' onClick={handleCreate}>Submit</Button>
@@ -66,4 +67,4 @@ function CreateTodo(props: {open: boolean, group_id: string, close_fn: () => voi
     )
 }
 
-export default CreateTodo;
+export default CreateGroup;

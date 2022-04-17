@@ -5,12 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import Todo from '../core/Todo';
 import { removeTodo, RootState, toggleTodo } from '../store/default';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useTodosSelector } from '../core/Hooks';
+import { useAuthorization, useTodosSelector } from '../core/Hooks';
 import { removeTodoAsync, toggleTodoAsync } from '../core/logic/TodoLogic';
 
 function TodoTask(props: {
     item: Todo
 }) {
+    const [_, token] = useAuthorization()
     const isCompleted = useTodosSelector(state => {
         let group = state.tgroups.get(props.item.group_id)
 
@@ -25,31 +26,35 @@ function TodoTask(props: {
     const dispatch = useDispatch()
 
     function handleToggle() {
-        toggleTodoAsync(props.item.id).then(() => {
-            dispatch(toggleTodo({
-                group_id: props.item.group_id,
-                todo_id: props.item.id
-            }))
-        })
+        if ( token ) {
+            toggleTodoAsync(token, props.item.id).then(() => {
+                dispatch(toggleTodo({
+                    group_id: props.item.group_id,
+                    todo_id: props.item.id
+                }))
+            })
+        }
     }
 
     function handleDelete() {
-        removeTodoAsync(props.item.id).then(() => {
-            dispatch(removeTodo({
-                group_id: props.item.group_id,
-                todo_id: props.item.id
-            }))
-        })
+        if ( token ) {
+            removeTodoAsync(token, props.item.id).then(() => {
+                dispatch(removeTodo({
+                    group_id: props.item.group_id,
+                    todo_id: props.item.id
+                }))
+            })
+        }
     }
 
     return (
         <ListItem>
             <ListItemButton component="button" onClick={handleToggle} selected={isCompleted}>
                 <ListItemText primary={props.item.text} style={{ textDecoration: isCompleted ? 'line-through' : 'none' }} />
-                <IconButton edge="end" onClick={handleDelete}>
-                    <DeleteIcon />
-                </IconButton>
             </ListItemButton>
+            <IconButton edge="end" onClick={handleDelete}>
+                <DeleteIcon />
+            </IconButton>
         </ListItem>
     )
 }

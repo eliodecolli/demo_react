@@ -1,59 +1,110 @@
 import Todo from "../Todo";
 import {v4 as uuid} from 'uuid';
 import TodoGroup from "../TodoGroup";
+import { API_URL } from "../Constants";
+import axios from "axios";
 
-export function createNewTodoAsync(text: string, group_id: string): Promise<Todo> {
-    // here we should use Axios but later on I guess :)
+type TodoServerObject = { 
+    id: string;
+    group_id: string;
+    text: string;
+    is_completed: boolean;
+}
+
+type GroupServerObject = {
+    group_id: string;
+    name: string;
+    todos: TodoServerObject[];
+}
+
+function mapTodo(serverObject: TodoServerObject): Todo {
+    return {
+        id: serverObject.id,
+        group_id: serverObject.group_id,
+        text: serverObject.text,
+        completed: serverObject.is_completed
+    }
+}
+
+function mapGroup(serverObject: GroupServerObject): TodoGroup {
+    return {
+        id: serverObject.group_id,
+        name: serverObject.name,
+        items: serverObject.todos.map(x => mapTodo(x))
+    }
+}
+
+export async function createNewTodoAsync(token: string, text: string, group_id: string): Promise<Todo> {
+    const result = await axios(
+    {
+        url: API_URL + '/api/todo',
+        method: 'POST',
+        headers: {
+            "X-Token": token
+        },
+        data: {
+            group_id,
+            text
+        }
+    })
+
+    return mapTodo((result.data as TodoServerObject))
+}
+
+export async function toggleTodoAsync(token: string, todoId: string): Promise<void> {
+    await axios({
+        url: API_URL + `/api/todo/toggle/${todoId}`,
+        method: 'post',
+        headers: {
+            "X-Token": token
+        }
+    })
+}
+
+export async function removeTodoAsync(token: string, todoId: string): Promise<void> {
+    await axios({
+        url: API_URL + '/api/todo/' + todoId,
+        method: "delete",
+        headers: {
+            "X-Token": token
+        }
+    })
+}
+
+export async function createTodoGroupAsync(token: string, name: string): Promise<TodoGroup> {
+    const result = await axios(
+        {
+            url: API_URL + '/api/groups',
+            method: 'POST',
+            headers: {
+                "X-Token": token
+            },
+            data: {
+                group_name: name
+            }
+        })
     
-    return new Promise((resolve, reject) => {
-        let todo: Todo = {
-            id: uuid(),
-            group_id: group_id,
-            text: text,
-            created_on: "NOW",
-            deadline: "NEVER",
-            completed: false
+    return mapGroup(result.data as GroupServerObject)
+}
+
+export async function removeTodoGroupAsync(token:string, id: string): Promise<void> {
+    await axios({
+        url: API_URL + '/api/groups/' + id,
+        method: 'delete',
+        headers: {
+            "X-Token": token
         }
-
-        resolve(todo)
     })
 }
 
-export function toggleTodoAsync(todoId: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        // axios stuff
-
-        resolve()
-    })
-}
-
-export function removeTodoAsync(todoId: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        // axios stuff
-
-        resolve()
-    })
-}
-
-export function createTodoGroupAsync(name: string): Promise<TodoGroup> {
-    return new Promise((resolve, reject) => {
-        // axios stuff
-        let id = uuid()
-
-        let group: TodoGroup = {
-            id,
-            name,
-            items: []
+export async function getGroupsAsync(token: string): Promise<TodoGroup[]> {
+    const groups = await axios({
+        url: API_URL + '/api/groups',
+        method: 'GET',
+        headers: {
+            "X-Token": token
         }
-
-        resolve(group)
     })
-}
 
-export function removeTodoGroupAsync(id: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        // axios stuff
-
-        resolve()
-    })
+    return (groups.data as GroupServerObject[]).map(x => mapGroup(x))
 }

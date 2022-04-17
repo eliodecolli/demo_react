@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { useAuthorization } from "../core/Hooks";
+import { loginAsync, AuthResponse } from "../core/logic/AuthLogic";
 import { login } from "../store/default";
 
 function Login() {
@@ -14,13 +15,28 @@ function Login() {
     const dispatch = useDispatch()
 
     const navigate = useNavigate()
-    const auth = useAuthorization()
+    const [auth, _] = useAuthorization()
 
     useEffect(() => {
         if ( auth ) {
             navigate('/')
         }
     })
+
+    function handleLogin() {
+        loginAsync(username, password).then(x => {
+            if ( x.error ) {
+                alert(x.message) // too lazy to do fancy dialogs
+            }
+            else {
+                dispatch(login({
+                    userName: username,
+                    token: x.token as string
+                }))
+                navigate('/')
+            }
+        })
+    }
 
     return (
         <Box sx={{
@@ -42,13 +58,7 @@ function Login() {
                         type="password"
                         label="Password"
                     />
-                    <Button variant='contained' onClick={() => {
-                      dispatch(login({
-                          userName: username,
-                          token: 'abc'
-                      }))
-                      navigate('/')
-                    }}>Login</Button>
+                    <Button variant='contained' onClick={() => handleLogin()}>Login</Button>
             </FormControl>
             <Link onClick={() => navigate('/signup')} component='a'>Sign up</Link>
         </Box>

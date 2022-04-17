@@ -15,6 +15,10 @@ interface AuthStoreState {
     isLoggedIn: boolean;
 }
 
+interface AppStoreState {
+    worker_triggered: boolean;
+}
+
 const authInitialState: AuthStoreState = {
     username: 'Anon',
     token: undefined,
@@ -25,6 +29,10 @@ const todosInitialState: TodosStoreState = {
     tgroups: new Map<string, TodoGroup>()
 }
 
+const appInitialState: AppStoreState = {
+    worker_triggered: false
+}
+
 const todos_slice = createSlice({
     name: 'todos',
     initialState: todosInitialState,
@@ -33,7 +41,7 @@ const todos_slice = createSlice({
             state.tgroups.set(action.payload.group_id, {
                 id: action.payload.group_id,
                 name: action.payload.group_name,
-                items: []
+                items: action.payload.items ? action.payload.items : []
             })
         },
 
@@ -46,8 +54,6 @@ const todos_slice = createSlice({
                 id: action.payload.item.id,
                 group_id: action.payload.item.group_id,
                 text: action.payload.item.text,
-                deadline: action.payload.item.deadline,
-                created_on: "NOW",
                 completed: false
             })
         },
@@ -97,16 +103,28 @@ const auth_slice = createSlice({
     }
 })
 
+const app_slice = createSlice({
+    name: 'app',
+    initialState: appInitialState,
+    reducers: {
+        changeWorkerState(state, action: PayloadAction<boolean>) {
+            state.worker_triggered = action.payload
+        }
+    }
+})
+
 const store = configureStore({
     reducer: {
         todos: todos_slice.reducer,
-        auth: auth_slice.reducer
+        auth: auth_slice.reducer,
+        app: app_slice.reducer
     },
     devTools: true
 })
 
 export const { createGroup, removeGroup, createTodo, removeTodo, toggleTodo } = todos_slice.actions
 export const { login, logout } = auth_slice.actions
+export const { changeWorkerState } = app_slice.actions
 export type RootState = ReturnType<typeof store.getState>
-export type {TodosStoreState, AuthStoreState}
+export type {TodosStoreState, AuthStoreState, AppStoreState}
 export default store;

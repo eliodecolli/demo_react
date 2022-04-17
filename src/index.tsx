@@ -13,6 +13,7 @@ import Signup from './pages/Signup';
 import { useAuthorization } from './core/Hooks';
 import Login from './pages/Login';
 import TodoGroup from './pages/TodoGroups';
+import Worker from './components/Worker';
 
 enableMapSet();
 
@@ -31,6 +32,7 @@ root.render(
           <Route path='/groups' element={<TodoGroup />} />
         </Routes>
         </BrowserRouter>
+        <Worker />
       </Provider>
   </React.StrictMode>
 );
