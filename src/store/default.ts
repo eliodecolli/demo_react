@@ -4,6 +4,7 @@ import TodoGroup, { TodoGroupEvent } from '../core/TodoGroup'
 import { Login } from './interfaces/AuthActions';
 import { CreateGroup, RemoveGroup } from './interfaces/GroupActions'
 import { CreateTodo, RemoveTodo, ToggleTodo } from './interfaces/TodoActions'
+import { initAppThunk } from './thunks/AuthThunks';
 import { createTodoGroupThunk, createTodoThunk, getGroupsThunk, removeGroupThunk, removeTodoThunk, toggleTodoThunk } from './thunks/TodoThunks';
 
 
@@ -115,16 +116,29 @@ const app_slice = createSlice({
     }
 })
 
+
+const auth_slice = createSlice({
+    name: 'auth',
+    initialState: authInitialState,
+    reducers: {
+        setLoggedin(state) {
+            state.isLoggedIn = true
+        }
+    }
+})
+
 const store = configureStore({
     reducer: {
         todos: todos_slice.reducer,
+        auth: auth_slice.reducer,
         app: app_slice.reducer
     },
     devTools: true
 })
 
 // export const { createGroup, removeGroup, createTodo, removeTodo, toggleTodo } = todos_slice.actions
+export const { setLoggedin } = auth_slice.actions
 export const { changeWorkerState } = app_slice.actions
 export type RootState = ReturnType<typeof store.getState>
-export type {TodosStoreState, AppStoreState}
+export type {TodosStoreState, AppStoreState, AuthStoreState}
 export default store;

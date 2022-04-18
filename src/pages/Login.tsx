@@ -6,6 +6,8 @@ import { useLocation, useNavigate } from "react-router";
 import { useAuthorization } from "../core/Hooks";
 import { loginAsync, AuthResponse } from "../core/logic/AuthLogic";
 import { setupAxios } from "../core/logic/TodoLogic";
+import { setLoggedin } from "../store/default";
+import { initAppThunk } from "../store/thunks/AuthThunks";
 import { getGroupsThunk } from "../store/thunks/TodoThunks";
 
 function Login() {
@@ -18,7 +20,7 @@ function Login() {
 
     const dispatch = useDispatch()
     
-    const [auth] = useAuthorization()
+    const auth = useAuthorization()
 
     useEffect(() => {
         if ( auth ) {
@@ -33,7 +35,7 @@ function Login() {
             }
             else {
                 const token = x.token as string;
-                localStorage.setItem('x-token', token)
+                dispatch(initAppThunk(token))
                 //@ts-ignore
                 navigate(location.state?.from?.pathname || '/')
             }

@@ -1,12 +1,18 @@
 import { Box, Button, FormControl, Link, TextField } from "@mui/material"
 import { useEffect, useState } from "react"
+import { useDispatch } from "react-redux"
 import { useLocation, useNavigate } from "react-router"
 import { useAuthorization } from "../core/Hooks"
 import { registerAsync } from "../core/logic/AuthLogic"
+import { setupAxios } from "../core/logic/TodoLogic"
+import { setLoggedin } from "../store/default"
+import { initAppThunk } from "../store/thunks/AuthThunks"
+import { getGroupsThunk } from "../store/thunks/TodoThunks"
 
 function Signup() {
-    const [auth, _] = useAuthorization()
+    const auth = useAuthorization()
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     useEffect(() => {
         if ( auth ) {
@@ -24,7 +30,7 @@ function Signup() {
             }
             else {
                 const token = x.token as string;
-                localStorage.setItem('x-token', token)
+                dispatch(initAppThunk(token))
                 navigate('/')
             }
         })

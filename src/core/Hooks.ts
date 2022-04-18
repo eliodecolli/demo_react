@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppStoreState, changeWorkerState, RootState, TodosStoreState } from "../store/default";
+import { AppStoreState, changeWorkerState, RootState, setLoggedin, TodosStoreState } from "../store/default";
 
-export function useAuthorization(): [boolean, string | undefined] {
-    // const authorized = useSelector((state: RootState) => state.auth.isLoggedIn)
-    // const token = useSelector((state: RootState) => state.auth.token)
+export function useAuthorization() {
+    const authorized = useSelector((state: RootState) => state.auth.isLoggedIn)
+    // const dispatch = useDispatch()
+    // const token = localStorage.getItem('x-token')
 
-    // return [authorized, token]
-    
-    const token = localStorage.getItem('x-token')
-    return [token !== null, token ? token: undefined]
+    // if ( token && !authorized ) {
+    //     dispatch(setLoggedin())
+    // }
+    return authorized
 }
 
 

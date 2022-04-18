@@ -8,8 +8,6 @@ function CreateTodo(props: {open: boolean, group_id: string, close_fn: () => voi
     const [taskText, setTaskText] = useState('')
     const dispatch = useDispatch()
 
-    const [_, token] = useAuthorization()
-    
     const style = {
         position: 'absolute' as 'absolute',
         top: '50%',
@@ -23,17 +21,6 @@ function CreateTodo(props: {open: boolean, group_id: string, close_fn: () => voi
       };
 
     function handleCreate() {
-        // if ( token ) {
-        //     createNewTodoAsync(token, taskText, props.group_id).then(todo => {
-        //         console.log(todo)
-        //         dispatch(createTodo({
-        //             item: todo
-        //         }))
-        //         setTaskText('')
-        //         props.close_fn()
-        //     })
-        // }
-
         dispatch(createTodoThunk({
             group_id: props.group_id,
             text: taskText
