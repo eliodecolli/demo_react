@@ -2,14 +2,11 @@ import { Box, Button, Divider, Fade, FormControl, Modal, TextField, Typography }
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAuthorization } from "../core/Hooks";
-import { createNewTodoAsync, createTodoGroupAsync } from "../core/logic/TodoLogic";
-import { createGroup, createTodo } from "../store/default";
+import { createTodoGroupThunk } from "../store/thunks/TodoThunks";
 
 function CreateGroup(props: {open: boolean, close_fn: () => void}) {
     const [groupName, setGroupName] = useState('')
     const dispatch = useDispatch()
-
-    const [_, token] = useAuthorization()
     
     const style = {
         position: 'absolute' as 'absolute',
@@ -24,17 +21,11 @@ function CreateGroup(props: {open: boolean, close_fn: () => void}) {
       };
 
     function handleCreate() {
-        if ( token ) {
-            createTodoGroupAsync(token, groupName).then(group => {
-                dispatch(createGroup({
-                    group_id: group.id,
-                    group_name: groupName,
-                    items: []
-                }))
-                setGroupName('')
-                props.close_fn()
-            })
-        }
+        dispatch(createTodoGroupThunk({
+            group_name: groupName
+        }))
+        setGroupName('')
+        props.close_fn()
     }
 
     return (

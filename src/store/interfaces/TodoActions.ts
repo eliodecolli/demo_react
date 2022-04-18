@@ -1,7 +1,8 @@
 import Todo from "../../core/Todo";
 
 export interface CreateTodo {
-    item: Todo
+    text: string;
+    group_id: string;
 }
 
 export interface RemoveTodo {

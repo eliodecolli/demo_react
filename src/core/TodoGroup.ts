@@ -6,4 +6,8 @@ interface TodoGroup {
     name: string;
 }
 
+export interface TodoGroupEvent {
+    group_id: string;
+}
+
 export default TodoGroup;

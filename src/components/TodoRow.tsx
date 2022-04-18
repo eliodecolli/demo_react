@@ -3,10 +3,9 @@ import ListItem from '@mui/material/ListItem'
 import { ChangeEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Todo from '../core/Todo';
-import { removeTodo, RootState, toggleTodo } from '../store/default';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuthorization, useTodosSelector } from '../core/Hooks';
-import { removeTodoAsync, toggleTodoAsync } from '../core/logic/TodoLogic';
+import { removeTodoThunk, toggleTodoThunk } from '../store/thunks/TodoThunks';
 
 function TodoTask(props: {
     item: Todo
@@ -26,25 +25,35 @@ function TodoTask(props: {
     const dispatch = useDispatch()
 
     function handleToggle() {
-        if ( token ) {
-            toggleTodoAsync(token, props.item.id).then(() => {
-                dispatch(toggleTodo({
-                    group_id: props.item.group_id,
-                    todo_id: props.item.id
-                }))
-            })
-        }
+        // if ( token ) {
+        //     toggleTodoAsync(token, props.item.id).then(() => {
+        //         dispatch(toggleTodo({
+        //             group_id: props.item.group_id,
+        //             todo_id: props.item.id
+        //         }))
+        //     })
+        // }
+
+        dispatch(toggleTodoThunk({
+            group_id: props.item.group_id,
+            todo_id: props.item.id
+        }))
     }
 
     function handleDelete() {
-        if ( token ) {
-            removeTodoAsync(token, props.item.id).then(() => {
-                dispatch(removeTodo({
-                    group_id: props.item.group_id,
-                    todo_id: props.item.id
-                }))
-            })
-        }
+        // if ( token ) {
+        //     removeTodoAsync(token, props.item.id).then(() => {
+        //         dispatch(removeTodo({
+        //             group_id: props.item.group_id,
+        //             todo_id: props.item.id
+        //         }))
+        //     })
+        // }
+
+        dispatch(removeTodoThunk({
+            group_id: props.item.group_id,
+            todo_id: props.item.id
+        }))
     }
 
     return (

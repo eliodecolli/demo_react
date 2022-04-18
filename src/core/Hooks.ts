@@ -3,10 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppStoreState, changeWorkerState, RootState, TodosStoreState } from "../store/default";
 
 export function useAuthorization(): [boolean, string | undefined] {
-    const authorized = useSelector((state: RootState) => state.auth.isLoggedIn)
-    const token = useSelector((state: RootState) => state.auth.token)
+    // const authorized = useSelector((state: RootState) => state.auth.isLoggedIn)
+    // const token = useSelector((state: RootState) => state.auth.token)
 
-    return [authorized, token]
+    // return [authorized, token]
+    
+    const token = localStorage.getItem('x-token')
+    return [token !== null, token ? token: undefined]
 }
 
 
@@ -21,7 +24,7 @@ export function useAppSelector<TSelected = unknown>(selector: (state: AppStoreSt
     return selected
 }
 
-export function useWorkerAwaiter(): [boolean, (state: boolean) => void] {
+export function useLoadingScreen(): [boolean, (state: boolean) => void] {
     const awaitState = useAppSelector(x => x.worker_triggered)
     const dispatch = useDispatch()
 

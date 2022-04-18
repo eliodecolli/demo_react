@@ -8,7 +8,6 @@ import { useTodosSelector } from "../core/Hooks";
 
 
 function TodoGroup() {
-
     const groups = useTodosSelector(x => x.tgroups)
     const navigate = useNavigate()
 

@@ -2,20 +2,23 @@ import { Button, FormControl, Link, Paper, TextField } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useAuthorization } from "../core/Hooks";
 import { loginAsync, AuthResponse } from "../core/logic/AuthLogic";
-import { login } from "../store/default";
+import { setupAxios } from "../core/logic/TodoLogic";
+import { getGroupsThunk } from "../store/thunks/TodoThunks";
 
 function Login() {
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 
-    const dispatch = useDispatch()
-
     const navigate = useNavigate()
-    const [auth, _] = useAuthorization()
+    const location = useLocation()
+
+    const dispatch = useDispatch()
+    
+    const [auth] = useAuthorization()
 
     useEffect(() => {
         if ( auth ) {
@@ -29,11 +32,10 @@ function Login() {
                 alert(x.message) // too lazy to do fancy dialogs
             }
             else {
-                dispatch(login({
-                    userName: username,
-                    token: x.token as string
-                }))
-                navigate('/')
+                const token = x.token as string;
+                localStorage.setItem('x-token', token)
+                //@ts-ignore
+                navigate(location.state?.from?.pathname || '/')
             }
         })
     }

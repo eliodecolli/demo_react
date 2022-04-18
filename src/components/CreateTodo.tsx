@@ -2,8 +2,7 @@ import { Box, Button, Divider, Fade, FormControl, Modal, TextField, Typography }
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAuthorization } from "../core/Hooks";
-import { createNewTodoAsync } from "../core/logic/TodoLogic";
-import { createTodo } from "../store/default";
+import { createTodoThunk } from "../store/thunks/TodoThunks";
 
 function CreateTodo(props: {open: boolean, group_id: string, close_fn: () => void}) {
     const [taskText, setTaskText] = useState('')
@@ -24,16 +23,23 @@ function CreateTodo(props: {open: boolean, group_id: string, close_fn: () => voi
       };
 
     function handleCreate() {
-        if ( token ) {
-            createNewTodoAsync(token, taskText, props.group_id).then(todo => {
-                console.log(todo)
-                dispatch(createTodo({
-                    item: todo
-                }))
-                setTaskText('')
-                props.close_fn()
-            })
-        }
+        // if ( token ) {
+        //     createNewTodoAsync(token, taskText, props.group_id).then(todo => {
+        //         console.log(todo)
+        //         dispatch(createTodo({
+        //             item: todo
+        //         }))
+        //         setTaskText('')
+        //         props.close_fn()
+        //     })
+        // }
+
+        dispatch(createTodoThunk({
+            group_id: props.group_id,
+            text: taskText
+        }))
+        setTaskText('')
+        props.close_fn()
     }
 
     return (

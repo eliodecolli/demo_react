@@ -1,8 +1,10 @@
 import {createSlice, configureStore, PayloadAction} from '@reduxjs/toolkit'
-import TodoGroup from '../core/TodoGroup'
-import { Login } from './actions/AuthActions';
-import { CreateGroup, RemoveGroup } from './actions/GroupActions'
-import { CreateTodo, RemoveTodo, ToggleTodo } from './actions/TodoActions'
+import Todo, { TodoEvent } from '../core/Todo';
+import TodoGroup, { TodoGroupEvent } from '../core/TodoGroup'
+import { Login } from './interfaces/AuthActions';
+import { CreateGroup, RemoveGroup } from './interfaces/GroupActions'
+import { CreateTodo, RemoveTodo, ToggleTodo } from './interfaces/TodoActions'
+import { createTodoGroupThunk, createTodoThunk, getGroupsThunk, removeGroupThunk, removeTodoThunk, toggleTodoThunk } from './thunks/TodoThunks';
 
 
 interface TodosStoreState {
@@ -37,69 +39,69 @@ const todos_slice = createSlice({
     name: 'todos',
     initialState: todosInitialState,
     reducers: {
-        createGroup(state, action: PayloadAction<CreateGroup>) {
-            state.tgroups.set(action.payload.group_id, {
-                id: action.payload.group_id,
-                name: action.payload.group_name,
-                items: action.payload.items ? action.payload.items : []
-            })
-        },
+   
+    },
+    extraReducers: (builder) => {
+        builder.addCase(createTodoThunk.fulfilled, (state, action) => {
+            const item = action.payload as Todo;  // it's fulfilled isn't it?
 
-        removeGroup(state, action: PayloadAction<RemoveGroup>) {
-            state.tgroups.delete(action.payload.group_id)
-        },
-
-        createTodo(state, action: PayloadAction<CreateTodo>) {
-            state.tgroups.get(action.payload.item.group_id)?.items.push({
-                id: action.payload.item.id,
-                group_id: action.payload.item.group_id,
-                text: action.payload.item.text,
+            state.tgroups.get(item.group_id)?.items.push({
+                id: item.id,
+                group_id: item.group_id,
+                text: item.text,
                 completed: false
             })
-        },
+        })
 
-        removeTodo(state, action: PayloadAction<RemoveTodo>) {
-            let group = state.tgroups.get(action.payload.group_id)
+        builder.addCase(createTodoGroupThunk.fulfilled, (state, action) => {
+            const item = action.payload as TodoGroup;
+
+            console.log(item)
+
+            state.tgroups.set(item.id, {
+                id: item.id,
+                name: item.name,
+                items: item.items ? item.items : []
+            })
+        })
+
+        builder.addCase(getGroupsThunk.fulfilled, (state, action) => {
+            const items = action.payload as TodoGroup[];
+
+            items.forEach(item => {
+                state.tgroups.set(item.id, {
+                    id: item.id,
+                    name: item.name,
+                    items: item.items ? item.items : []
+                })
+            });
+        })
+
+        builder.addCase(toggleTodoThunk.fulfilled, (state, action) => {
+            const event = action.payload as TodoEvent;
+            let group = state.tgroups.get(event.group_id)
 
             if ( group ) {
-                group.items = group.items.filter(x => x.id != action.payload.todo_id)
-            }
-        },
-
-        toggleTodo(state, action: PayloadAction<ToggleTodo>) {
-            let group = state.tgroups.get(action.payload.group_id)
-
-            if ( group ) {
-                let item = group.items.find(x => x.id == action.payload.todo_id)
+                let item = group.items.find(x => x.id == event.todo_id)
                 if ( item ) {
                     item.completed = !item.completed
                 }
             }
-        }
-    }
-})
+        })
 
-const auth_slice = createSlice({
-    name: 'auth',
-    initialState: authInitialState,
-    reducers: {
+        builder.addCase(removeGroupThunk.fulfilled, (state, action) => {
+            const event = action.payload as TodoGroupEvent;
+            state.tgroups.delete(event.group_id)
+        })
 
-        login(state, action: PayloadAction<Login>) {
-            state.username = action.payload.userName
-            state.token = action.payload.token
-            state.isLoggedIn = true
-        },
+        builder.addCase(removeTodoThunk.fulfilled, (state, action) => {
+            const event = action.payload as TodoEvent;
 
-        logout(state) {
-            state.username = 'Anon'
-            state.token = undefined
-            state.isLoggedIn = false
-        },
-
-        default(state) {
-            return state
-        }
-
+            let group = state.tgroups.get(event.group_id)
+            if ( group ) {
+                group.items = group.items.filter(x => x.id != event.todo_id)
+            }
+        })
     }
 })
 
@@ -116,15 +118,13 @@ const app_slice = createSlice({
 const store = configureStore({
     reducer: {
         todos: todos_slice.reducer,
-        auth: auth_slice.reducer,
         app: app_slice.reducer
     },
     devTools: true
 })
 
-export const { createGroup, removeGroup, createTodo, removeTodo, toggleTodo } = todos_slice.actions
-export const { login, logout } = auth_slice.actions
+// export const { createGroup, removeGroup, createTodo, removeTodo, toggleTodo } = todos_slice.actions
 export const { changeWorkerState } = app_slice.actions
 export type RootState = ReturnType<typeof store.getState>
-export type {TodosStoreState, AuthStoreState, AppStoreState}
+export type {TodosStoreState, AppStoreState}
 export default store;

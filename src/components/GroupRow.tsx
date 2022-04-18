@@ -2,25 +2,15 @@ import Delete from "@mui/icons-material/Delete";
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { useAuthorization } from "../core/Hooks";
-import { removeTodoGroupAsync } from "../core/logic/TodoLogic";
-import { removeGroup } from "../store/default";
+import { removeGroupThunk } from "../store/thunks/TodoThunks";
 
 function GroupRow(props: {name: string, numItems: number, id: string}) {
-
-    const [_, token] = useAuthorization()
     const dispatch = useDispatch()
 
     function handleGroupRemove() {
-        if ( token ) {
-            removeTodoGroupAsync(token, props.id).then(() => {
-                console.log('should be dispatched')
-                dispatch(removeGroup(
-                    {
-                        group_id: props.id
-                    }
-                ))
-            })
-        }
+        dispatch(removeGroupThunk({
+            group_id: props.id
+        }))
     }
 
     return (

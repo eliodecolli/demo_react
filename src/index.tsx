@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import App from './Authorized';
 import { Provider } from 'react-redux';
 
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
@@ -13,7 +13,9 @@ import Signup from './pages/Signup';
 import { useAuthorization } from './core/Hooks';
 import Login from './pages/Login';
 import TodoGroup from './pages/TodoGroups';
-import Worker from './components/Worker';
+import LoadingScreen from './components/LoadingScreen';
+import Authorized from './Authorized';
+import Container from './Container';
 
 enableMapSet();
 
@@ -24,15 +26,25 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
       <Provider store={store}>
-        <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<App />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<Signup />} />
-          <Route path='/groups' element={<TodoGroup />} />
-        </Routes>
-        </BrowserRouter>
-        <Worker />
+        <Container>
+          <BrowserRouter>
+            <Routes>
+                <Route path='/' element={
+                  <Authorized>
+                    <HomePage />
+                  </Authorized>
+                } />
+                <Route path='/groups' element={
+                  <Authorized>
+                    <TodoGroup />
+                  </Authorized>
+                } />
+              <Route path='/login' element={<Login />} />
+              <Route path='/signup' element={<Signup />} />
+            </Routes>
+          </BrowserRouter>
+        </Container>
+        <LoadingScreen />
       </Provider>
   </React.StrictMode>
 );

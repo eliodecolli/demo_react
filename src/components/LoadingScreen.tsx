@@ -1,9 +1,9 @@
 import { CircularProgress } from "@mui/material";
 import Backdrop from "@mui/material/Backdrop";
-import { useWorkerAwaiter } from "../core/Hooks";
+import { useLoadingScreen } from "../core/Hooks";
 
-export default function Worker() {
-    const [awaitState, _] = useWorkerAwaiter()
+export default function LoadingScreen() {
+    const [awaitState, _] = useLoadingScreen()
 
     return (
         <div>

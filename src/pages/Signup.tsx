@@ -1,15 +1,12 @@
 import { Box, Button, FormControl, Link, TextField } from "@mui/material"
 import { useEffect, useState } from "react"
-import { useDispatch } from "react-redux"
-import { useNavigate } from "react-router"
+import { useLocation, useNavigate } from "react-router"
 import { useAuthorization } from "../core/Hooks"
 import { registerAsync } from "../core/logic/AuthLogic"
-import { login } from "../store/default"
 
 function Signup() {
     const [auth, _] = useAuthorization()
     const navigate = useNavigate()
-    const dispatch = useDispatch()
 
     useEffect(() => {
         if ( auth ) {
@@ -26,10 +23,8 @@ function Signup() {
                 alert(x.message) // too lazy to do fancy dialogs
             }
             else {
-                dispatch(login({
-                    userName: username,
-                    token: x.token as string
-                }))
+                const token = x.token as string;
+                localStorage.setItem('x-token', token)
                 navigate('/')
             }
         })

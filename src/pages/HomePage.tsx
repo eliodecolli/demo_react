@@ -1,16 +1,13 @@
-import {v4 as uuid} from 'uuid';
-import { useDispatch, useSelector } from "react-redux";
 import TodoCard from "../components/TodoCard";
 import TodoGroup from "../core/TodoGroup";
-import Todo from '../core/Todo'
-import { createGroup, createTodo, RootState } from "../store/default";
 
 import Button from '@mui/material/Button'
 import { Grid } from '@mui/material';
 import { useTodosSelector } from '../core/Hooks';
-import { createNewTodoAsync, createTodoGroupAsync } from '../core/logic/TodoLogic';
 import { useNavigate } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { getGroupsThunk } from "../store/thunks/TodoThunks";
 
 
 function HomePage(props: any) {
